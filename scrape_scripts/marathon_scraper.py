@@ -2,6 +2,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import re
 import pandas as pd
+import json
 
 url = "https://en.wikipedia.org/wiki/List_of_marathoners"
 
@@ -36,12 +37,11 @@ table_body = women.find('tbody')
 rows = table_body.find_all('tr')
 women_names = get_names(rows)
 
-print("Best Men: ")
-for man in men_names:
-    print(man)
+names = women_names + men_names
+data = {x:'elite' for x in names}
+for key,value in data.items():
+    print(str(key) + " is " + str(value))
 
-print("Best Women: ")
-for women in women_names:
-    print(women)
-
+with open("../data/data.json", "w") as f:
+    json.dump(data,f)
 driver.quit()
