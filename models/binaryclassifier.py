@@ -1,13 +1,16 @@
 #multilayer perceptron  neural network in a binary classifier
 #Used https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/3_NeuralNetworks/neural_network_raw.py as boilerplate
 #Todo make this a class for basic MLP()
-import numpy as np
 import tensorflow as tf
-from sklearn import preprocessing
-import sys, argparse
-import os
+import numpy as np
+import sklearn.datasets
+from sklearn.model_selection import train_test_split
+from tensorflow import keras
 
 # Import image data
+
+y_train = keras.utils.to_categorical(y_train, num_classes=2)
+y_test = keras.utils.to_categorical(y_test, num_classes=2)
 
 #Parameters
 learning_rate = 0
