@@ -22,8 +22,9 @@ image_dimensions = [128, 128]
 
 (X,y) = data_to_numpy(directory,image_dimensions)
 y =  np.asarray([i.decode("utf-8") for i in y])
+labels = np.unique(y)
 
-(X_train, X_test,y_train, y_test) = train_test_split(X,y, test_size = .3)
+(X_train, X_test,y_train, y_test) = train_test_split(X,y, test_size = .5)
 
 print("X_train: %s" % str(X_train.shape))
 print("y_train: %s" % str(y_train.shape))
@@ -69,8 +70,6 @@ biases = {
     'b2': tf.Variable(tf.random_normal([n_hidden_2])),
     'out': tf.Variable(tf.random_normal([num_classes]))
 }
-
-
 
 # Create model
 def neural_net(x):
@@ -153,10 +152,6 @@ with tf.Session() as sess:
 
   feed_dict = {X: predict}
   classification = sess.run(prediction, feed_dict)
-  classification = [int(i) for i in classification[0]]
-  print(classification)
-  labels = label_encoder.inverse_transform(classification)
-  print(labels)
-  runner_type = [labels[index] for index in range(len(classification)) if classification[index] == 1]
-  print("You are a " + str(runner_type[0]) + " runner!")
+  max_arg = np.argmax(classification, axis=1)[0]
+  print("You are a " + labels[max_arg] + " runner!")
   sess.close()
