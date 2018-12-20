@@ -4,13 +4,38 @@
 import tensorflow as tf
 import numpy as np
 import sklearn.datasets
+import sys
+import os
 from sklearn.model_selection import train_test_split
 from tensorflow import keras
+from sklearn.preprocessing import LabelEncoder
+
+sys.path.append(os.path.dirname(os.getcwd()))
+sys.path.append(os.getcwd())
+
+from image_manipulation.image_loader import data_to_numpy
 
 # Import image data
+print("Gathering the data...")
+directory = '/Users/courtneyshearer/Desktop/runners'
+image_dimensions = [800, 700]
 
-y_train = keras.utils.to_categorical(y_train, num_classes=2)
-y_test = keras.utils.to_categorical(y_test, num_classes=2)
+(X,y) = data_to_numpy(directory,image_dimensions)
+(X_train, X_test,y_train, y_test) = train_test_split(X,y, test_size = .3)
+
+print("X_train: %s" % str(X_train.shape))
+print("y_train: %s" % str(y_train.shape))
+print("X_test: %s" % str(X_test.shape))
+print("y_test: %s" % str(y_test.shape))
+
+
+# One Hot Vector
+label_encoder = LabelEncoder()
+y_test = label_encoder.fit_transform(y_test)
+y_train = label_encoder.fit_transform(y_train)
+
+y_train = keras.utils.to_categorical(y_train,num_classes=2)
+y_test = keras.utils.to_categorical(y_test,num_classes=2)
 
 #Parameters
 learning_rate = 0
@@ -22,7 +47,7 @@ display_step = 0
 n_hidden_1 = 256 # 1st layer number of neurons
 n_hidden_2 = 256 # 2nd layer number of neurons
 #TODO: Crop the image to be the same size
-num_input = 0 # data input (img shape: 28*28)
+num_input = image_dimensions[0] * image_dimensions[1]# data input (img shape: 28*28)
 num_classes = 2 # total classes (elite or nonelite)
 
 # tf Graph input
@@ -65,14 +90,32 @@ train_op = optimizer.minimize(loss_op)
 correct_pred = tf.equal(tf.argmax(prediction, 1), tf.argmax(Y, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
+
+# Initialize the variables (i.e. assign their default value)
+init = tf.global_variables_initializer()
+
+def next_batch(num, data, labels):
+    '''
+    Return a total of `num` random samples and labels.
+    '''
+    idx = np.arange(0 , len(data))
+    np.random.shuffle(idx)
+    idx = idx[:num]
+    data_shuffle = [data[i] for i in idx]
+    labels_shuffle = [labels[i] for i in idx]
+
+    return np.asarray(data_shuffle), np.asarray(labels_shuffle)
+
+
+
 # Start training
 with tf.Session() as sess:
-
+    print("In Session...")
     # Run the initializer
     sess.run(init)
 
     for step in range(1, num_steps+1):
-        batch_x, batch_y = mnist.train.next_batch(batch_size)
+        batch_x, batch_y = next_batch(batch_size, X_train, y_train)
         # Run optimization op (backprop)
         sess.run(train_op, feed_dict={X: batch_x, Y: batch_y})
         if step % display_step == 0 or step == 1:
@@ -87,5 +130,5 @@ with tf.Session() as sess:
 
     # Calculate accuracy for MNIST test images
     print("Testing Accuracy:", \
-        sess.run(accuracy, feed_dict={X: mnist.test.images,
-                                      Y: mnist.test.labels}))
+        sess.run(accuracy, feed_dict={X: X_test,
+                                      Y: y_test}))
