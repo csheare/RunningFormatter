@@ -41,6 +41,5 @@ def main():
     if args.image:
         image_reshape(args.image, args.save_image)
 
-
 if __name__ == '__main__':
     main()
