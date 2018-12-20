@@ -13,21 +13,22 @@ from sklearn.preprocessing import LabelEncoder
 sys.path.append(os.path.dirname(os.getcwd()))
 sys.path.append(os.getcwd())
 
-from image_manipulation.image_loader import data_to_numpy
+from image_manipulation.image_loader import *
 
 # Import image data
 print("Gathering the data...")
-directory = '/Users/courtneyshearer/Desktop/runners'
-image_dimensions = [800, 700]
+directory = '/Users/courtneyshearer/Desktop/runners_128'
+image_dimensions = [128, 128]
 
 (X,y) = data_to_numpy(directory,image_dimensions)
+y =  np.asarray([i.decode("utf-8") for i in y])
+
 (X_train, X_test,y_train, y_test) = train_test_split(X,y, test_size = .3)
 
 print("X_train: %s" % str(X_train.shape))
 print("y_train: %s" % str(y_train.shape))
 print("X_test: %s" % str(X_test.shape))
 print("y_test: %s" % str(y_test.shape))
-
 
 # One Hot Vector
 label_encoder = LabelEncoder()
@@ -36,6 +37,10 @@ y_train = label_encoder.fit_transform(y_train)
 
 y_train = keras.utils.to_categorical(y_train,num_classes=2)
 y_test = keras.utils.to_categorical(y_test,num_classes=2)
+
+#Flatten X
+X_train = np.reshape(X_train, [X_train.shape[0], -1])
+X_test = np.reshape(X_test, [X_test.shape[0], -1])
 
 #Parameters
 learning_rate = 0
@@ -46,8 +51,7 @@ display_step = 0
 # Network Parameters
 n_hidden_1 = 256 # 1st layer number of neurons
 n_hidden_2 = 256 # 2nd layer number of neurons
-#TODO: Crop the image to be the same size
-num_input = image_dimensions[0] * image_dimensions[1]# data input (img shape: 28*28)
+num_input = image_dimensions[0] * image_dimensions[1] * 3# data input (img shape: 128*128)
 num_classes = 2 # total classes (elite or nonelite)
 
 # tf Graph input
@@ -65,6 +69,8 @@ biases = {
     'b2': tf.Variable(tf.random_normal([n_hidden_2])),
     'out': tf.Variable(tf.random_normal([num_classes]))
 }
+
+
 
 # Create model
 def neural_net(x):
@@ -106,9 +112,9 @@ def next_batch(num, data, labels):
 
     return np.asarray(data_shuffle), np.asarray(labels_shuffle)
 
-
-
 # Start training
+saver = tf.train.Saver()
+
 with tf.Session() as sess:
     print("In Session...")
     # Run the initializer
@@ -128,7 +134,29 @@ with tf.Session() as sess:
 
     print("Optimization Finished!")
 
-    # Calculate accuracy for MNIST test images
+    # Calculate accuracy
     print("Testing Accuracy:", \
         sess.run(accuracy, feed_dict={X: X_test,
                                       Y: y_test}))
+
+    saver.save(sess, "./trained_models/model1.ckpt")
+
+#load predict data
+predict = image_to_numpy('/Users/courtneyshearer/Desktop/test_128.jpg',[128,128])
+predict = np.reshape(predict, [predict.shape[0], -1])
+# v1 = tf.get_variable("v1", shape=[3])
+
+with tf.Session() as sess:
+  # Restore variables from disk.
+  saver.restore(sess, "./trained_models/model1.ckpt")
+  print("Model restored.")
+
+  feed_dict = {X: predict}
+  classification = sess.run(prediction, feed_dict)
+  classification = [int(i) for i in classification[0]]
+  print(classification)
+  labels = label_encoder.inverse_transform(classification)
+  print(labels)
+  runner_type = [labels[index] for index in range(len(classification)) if classification[index] == 1]
+  print("You are a " + str(runner_type[0]) + " runner!")
+  sess.close()

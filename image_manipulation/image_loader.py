@@ -19,10 +19,18 @@ def get_num_files(directory, classes):
         num_files += len(os.listdir(directory +"/" + c))
     return num_files
 
+def image_to_numpy(location,image_dimensions):
+    X = np.empty((1,image_dimensions[0],image_dimensions[1],3))
+    X[0] = skimage.io.imread(location)
+    return X
+
 #image dimensions is a list [height,width]
 def data_to_numpy(directory, image_dimensions):
     # infer class names from the sub-directory names
     classes = os.listdir(directory)
+
+    if '.DS_Store' in classes:
+        classes.remove('.DS_Store')
 
     #determine the number of samples
     num_samples = get_num_files(directory,classes)
@@ -50,8 +58,7 @@ def data_to_numpy(directory, image_dimensions):
             y[i] = c
             i += 1
 
-    print(X)
-    print(y)
+    return (X,y)
 
 
 
