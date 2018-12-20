@@ -50,8 +50,7 @@ def data_to_numpy(directory, image_dimensions):
             y[i] = c
             i += 1
 
-    print(X)
-    print(y)
+    return (X,y)
 
 
 

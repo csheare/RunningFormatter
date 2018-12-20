@@ -13,9 +13,9 @@ def main():
 
     for i in images:
         file = str(args.directory) + str(i)
-        newfile = str(args.save_directory) + str(i)
+        newfile = str(args.save_directory) + str(i) 
         image = Image.open(file)
-        new_image = image.resize((700, 800))
+        new_image = image.resize((128, 128))
         try:
             new_image.save(newfile)
         except OSError:
