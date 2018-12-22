@@ -1,4 +1,6 @@
 # folders
 data
-models/trained_models
+checkpoints
+models/__pycache__
 image_manipulation/__pycache__
+scrape_scripts/__pycache__
