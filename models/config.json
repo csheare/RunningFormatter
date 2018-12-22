@@ -1,0 +1,18 @@
+{
+  "mlp" :
+  {
+
+    "lr" : 0.001,
+    "epochs" : 75,
+    "n_h_layers" : 2,
+    "n_h_units" : [512,512],
+    "act_funcs" : ["relu", "relu"],
+    "batch_size": 16,
+    "display_step": 1,
+    "image_dimensions": [128,128],
+    "load": 0,
+    "save" : 0,
+    "directory" : "/Users/courtneyshearer/Desktop/runners_128",
+     "test_image" : "/Users/courtneyshearer/Desktop/cfc9f654633143cd8ea6e1f38601157c.jpg"
+  }
+}
