@@ -29,23 +29,30 @@ def run(X,y,t):
 
 
     # create a basic convolutional neural network
+    # TODO: add batch norm later
+    # VGG 8 and VGG 16 network architecture
+    # ResNets : 
     cnn = keras.models.Sequential() 
 
     cnn.add(keras.layers.Conv2D(64, (3,3), padding="same", activation="relu", input_shape=(128,128,3)))
     cnn.add(keras.layers.MaxPooling2D(2, 2))
     cnn.add(keras.layers.Conv2D(128, (3,3), padding="same", activation="relu"))
     cnn.add(keras.layers.MaxPooling2D(2, 2))
-    cnn.add(keras.layers.Conv2D(128, (3,3), padding="same", activation="relu"))
+    cnn.add(keras.layers.Conv2D(256, (3,3), padding="same", activation="relu"))
     cnn.add(keras.layers.Flatten())
     cnn.add(keras.layers.Dense(1024, activation="relu"))
+    cnn.add(keras.layers.Dense(256, activation="relu"))
+    cnn.add(keras.layers.Dense(32, activation="relu"))
     cnn.add(keras.layers.Dense(2, activation="softmax"))
     cnn.summary()
 
     # compile the model
-    cnn.compile(optimizer="sgd", loss="categorical_crossentropy", metrics=["accuracy"])
+    cnn.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 
-    # train the model for two epochs, using a batch size of 256
-    history = cnn.fit(x=X_train, y=y_train, batch_size=256, epochs=5, validation_split=0.1)
+    # train the model for two epochs, using a batch size of 1
+    history = cnn.fit(x=X_train, y=y_train, batch_size=16, epochs=10, validation_split=0.1)
+    #plot
+
 
     # evaluate the model
     score = cnn.evaluate(x=X_test, y=y_test)
