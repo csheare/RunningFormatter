@@ -34,11 +34,19 @@ def run(X,y,t):
     # ResNets : 
     cnn = keras.models.Sequential() 
 
-    cnn.add(keras.layers.Conv2D(64, (3,3), padding="same", activation="relu", input_shape=(128,128,3)))
+    cnn.add(keras.layers.Conv2D(64, (3,3), padding="same", input_shape=(128,128,3)))
+    model.add(keras.layers.BatchNormalization())
+    model.add(keras.layers.Activation('relu')) 
     cnn.add(keras.layers.MaxPooling2D(2, 2))
-    cnn.add(keras.layers.Conv2D(128, (3,3), padding="same", activation="relu"))
+
+    cnn.add(keras.layers.Conv2D(128, (3,3), padding="same"))
+    model.add(keras.layer.BatchNormalization())
+    model.add(keras.layers.Activation('relu'))
     cnn.add(keras.layers.MaxPooling2D(2, 2))
-    cnn.add(keras.layers.Conv2D(256, (3,3), padding="same", activation="relu"))
+
+    cnn.add(keras.layers.Conv2D(256, (3,3), padding="same"))
+    model.add(keras.layer.BatchNormalization())
+    model.add(keras.layers.Activation('relu'))
     cnn.add(keras.layers.Flatten())
     cnn.add(keras.layers.Dense(1024, activation="relu"))
     cnn.add(keras.layers.Dense(256, activation="relu"))
