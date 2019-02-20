@@ -1,0 +1,7 @@
+#PBS -N cnn
+#PBS -l select=1:ncpus=4:ngpus=2:mem=32gb:gpu_model=p100,walltime=24:00:00
+
+cd /home/$USER/RunningFormatter/models
+source activate myenv
+python cnn_wk.py --data "../data/runners.hdf5" --test_size .2
+
